@@ -39,11 +39,8 @@ export const Register = (props) => {
         dispatch(registerAction(newUser))
 
         firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                props.history.push('/timers')
-            } else {
-                setPassword('')
-            }
+            if (user) props.history.push('/timers')
+            else setPassword('')
         });
     }
 

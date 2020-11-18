@@ -112,12 +112,10 @@ export const Login = (props) => {
         }
 
         dispatch(loginAction(newUser))
+        
         firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                props.history.push('/timers')
-            } else {
-                setPassword('')
-            }
+            if (user) props.history.push('/timers')
+            else setPassword('')
         });
     }
 

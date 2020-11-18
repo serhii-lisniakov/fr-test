@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Route, BrowserRouter as Router, Redirect } from 'react-router-dom';
 import styled from 'styled-components';
 import { Login } from '../src/Components/Login/Login'
@@ -16,20 +16,15 @@ const Container = styled.div`
   justify-content: center;
 `
 
-const App = () => {
-  
-  
-  
-  return (
-    <Container>
-      <Router basename={'/fr-test'}>
-        <Route path='/login' component={Login} />
-        <Route path='/register' component={Register} />
-        <Route path='/timers' component={Timers} />
-        <Route exact path='/' render={() => <Redirect to="/login"/>} />
-      </Router>
-    </Container>
-  )
-}
+const App = () => (
+  <Container>
+    <Router basename={'/fr-test'}>
+      <Route path='/login' component={Login} />
+      <Route path='/register' component={Register} />
+      <Route path='/timers' component={Timers} />
+      <Route exact path='/' render={() => <Redirect to="/login"/>} />
+    </Router>
+  </Container>
+)
 
 export default App;

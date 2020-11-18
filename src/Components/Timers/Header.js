@@ -13,19 +13,16 @@ const HeaderWrapper = styled.div`
     padding: 50px 45px 0;
     font-size: 24px;
     font-weight: 500;
-    div:last-child {
+    div {
         cursor: pointer;
+        margin-left: auto;
     }
     @media (max-width: 525px) {
         flex-direction: column;
         align-items: center;
         padding-top: 20px;
-        div:last-child {
-            margin-top: 10px;
-        }
     }
 `
-
 
 export const Header = ({props}) => {
     
@@ -34,11 +31,8 @@ export const Header = ({props}) => {
         props.history.push('/login')
     }
 
-    const username = useSelector(state => state.user.name)
-
     return (
         <HeaderWrapper>
-            <div>Hello, {username}</div>
             <div onClick={logout}>Log out</div>
         </HeaderWrapper>
     )

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { updateTimersAction } from '../../store/user/actions'
 import firebase from "firebase/app";
 import "firebase/database";
 import clock from '../../assets/clock.svg'
 import { Header } from './Header';
+import { Redirect } from 'react-router-dom';
 
 const TimersContainer = styled.div`
     display: flex;
@@ -48,11 +48,9 @@ const Timer = styled.div`
 
 export const Timers = (props) => {
     const user = useSelector(state => state.user)
-    console.log(user);
+    const userId = JSON.parse(localStorage.getItem('token'))
     const [desktopTime, setDesktopTime] = useState(user.desktopTimer || 0)
     const [mobileTime, setMobileTime] = useState(user.mobileTimer || 0)
-
-    const dispatch = useDispatch()
 
     const msToHMinSec = (ms) => {
         let sec = parseInt((ms / 1000) % 60),
@@ -66,30 +64,30 @@ export const Timers = (props) => {
         return h + ':' + min + ':' + sec;
     }
 
-    // useEffect(() => {
-    //     const userId = firebase.auth().currentUser.uid;
-        
-    //     firebase.database().ref('users/' + userId).once('value').then(function(snapshot) {
-    //         setDesktopTime((snapshot.val() && snapshot.val().desktopTimer) || 0)
-    //         setMobileTime((snapshot.val() && snapshot.val().mobileTimer) || 0)
-    //       })
-    // }, [])
-
     useEffect(() => {
-        const timers = {
-            desktopTime,
-            mobileTime
+        firebase.database().ref('users/' + userId).once('value').then(function(snapshot) {
+            setDesktopTime((snapshot.val() && snapshot.val().desktopTimer) || 0)
+            setMobileTime((snapshot.val() && snapshot.val().mobileTimer) || 0)
+        })
+    }, [])
+
+    useEffect(() =>  {
+        let timer
+        if (window.innerWidth < 525) timer = setTimeout(() => setMobileTime(prev => prev + 1000), 1000)
+        else timer = setTimeout(() => setDesktopTime(prev => prev + 1000), 1000)
+
+        return () => {
+            clearTimeout(timer)
+            const updates = {};
+            updates['/users/' + userId + '/desktopTimer'] = desktopTime;
+            updates['/users/' + userId + '/mobileTimer'] = mobileTime;
+            
+            firebase.database().ref().update(updates);
         }
-        if (window.innerWidth < 525) {
-            setTimeout(() => setMobileTime(prev => prev + 1000), 1000)
-            dispatch(updateTimersAction(timers))
-        }
-        else   {
-            setTimeout(() => setDesktopTime(prev => prev + 1000), 1000)
-            dispatch(updateTimersAction(timers))
-        }
+
     }, [desktopTime, mobileTime])
 
+    if (!userId) return <Redirect to="/login"/>
     return (
         <>
             <Header props={props}/>
